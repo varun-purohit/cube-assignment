@@ -1,38 +1,65 @@
-import { customerList } from "../utils/data";
+import { useState, useEffect, useRef } from "react";
+import { Customer } from "../utils/types";
 
 interface CustomerListProps {
-  customerId: number | null;
-  handleCustomer: (id: number) => void;
+  customers: Customer[];
+  selectedCustomer: Customer | null;
+  onSelectCustomer: (customer: Customer) => void;
 }
 
-const CustomerList = ({ customerId, handleCustomer }: CustomerListProps) => {
-  return (
-    <ul className="">
-      {customerList.map((customer) => {
-        const description = customer.description;
-        const truncatedDescription =
-          description.split(" ").length > 22
-            ? `${description.split(" ").slice(0, 22).join(" ")}...`
-            : description;
+const CustomerList = ({
+  customers,
+  selectedCustomer,
+  onSelectCustomer,
+}: CustomerListProps) => {
+  const [visibleCustomers, setVisibleCustomers] = useState(20);
+  const listRef = useRef<HTMLUListElement | null>(null);
 
-        return (
-          <li
-            key={customer.id}
-            className={`border border-gray-200 p-6 cursor-pointer  ${
-              customerId === customer.id
-                ? "bg-gray-200 border-r-2 border-r-gray-600"
-                : "bg-white"
-            }`}
-            onClick={() => handleCustomer(customer.id)}
-          >
-            <h2 className="capitalize text-gray-700 text-xl tracking-wide">
-              {customer.heading}
-            </h2>
-            <p className="text-gray-400 mt-2">{truncatedDescription}</p>
-          </li>
-        );
-      })}
+  const loadMoreCustomers = () => {
+    if (visibleCustomers < customers.length) {
+      setVisibleCustomers((prevVisibleCustomers) => prevVisibleCustomers + 20);
+    }
+  };
+
+  const handleScroll = () => {
+    if (listRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+      if (scrollTop + clientHeight >= scrollHeight - 10) {
+        loadMoreCustomers();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (listRef.current) {
+        listRef.current.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [visibleCustomers]);
+
+  return (
+    <ul ref={listRef} className="h-full overflow-y-auto">
+      {customers.map((customer) => (
+        <li
+          key={customer.id}
+          className={`border border-gray-200 p-6 cursor-pointer ${
+            selectedCustomer?.id === customer.id ? "bg-gray-200" : "bg-white"
+          }`}
+          onClick={() => onSelectCustomer(customer)}
+        >
+          <h1 className="capitalize text-gray-700 font-semibold text-xl tracking-wide">
+            {customer.name}
+          </h1>
+          <h2 className="text-sm text-gray-600">{customer.title}</h2>
+          <p className="text-xs text-gray-500">{customer.address}</p>
+        </li>
+      ))}
     </ul>
   );
 };
+
 export default CustomerList;

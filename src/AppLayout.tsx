@@ -1,28 +1,45 @@
-import { useState } from "react";
-import CustomerDetails from "./pages/CustomerDetails";
+import { useEffect, useState } from "react";
+import { faker } from "@faker-js/faker";
+import { Customer } from "./utils/types";
 import CustomerList from "./pages/CustomerList";
-import { customerList } from "./utils/data";
+import CustomerDetails from "./pages/CustomerDetails";
+import Header from "./components/Header";
 
 const AppLayout = () => {
-  const [customerId, setCustomerId] = useState<number | null>(null);
-
-  const handleCustomer = (id: number) => {
-    setCustomerId(id);
-  };
-
-  const selectedCustomer = customerList.find(
-    (customer) => customer.id === customerId
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
   );
 
+  useEffect(() => {
+    const generatedCustomers = Array.from({ length: 1000 }, (_, index) => ({
+      id: index + 1,
+      name: faker.person.fullName(),
+      title: faker.person.jobTitle(),
+      address: faker.location.streetAddress(true),
+    }));
+    console.log(generatedCustomers);
+
+    setCustomers(generatedCustomers);
+    setSelectedCustomer(generatedCustomers[0]);
+  }, []);
+
   return (
-    <div className="grid h-screen grid-cols-[25%_1fr]  ">
-      <div className="overflow-y-auto">
-        <CustomerList customerId={customerId} handleCustomer={handleCustomer} />
+    <>
+      <Header />
+      <div className="grid h-screen grid-cols-[25%_1fr]  ">
+        <div className="overflow-y-auto">
+          <CustomerList
+            customers={customers}
+            selectedCustomer={selectedCustomer}
+            onSelectCustomer={setSelectedCustomer}
+          />
+        </div>
+        <div className="">
+          {selectedCustomer && <CustomerDetails customer={selectedCustomer} />}
+        </div>
       </div>
-      <div className="h-screen">
-        {selectedCustomer && <CustomerDetails customer={selectedCustomer} />}
-      </div>
-    </div>
+    </>
   );
 };
 export default AppLayout;

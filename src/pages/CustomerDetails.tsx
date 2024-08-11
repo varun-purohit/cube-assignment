@@ -1,19 +1,21 @@
+import { Customer } from "../utils/types";
+import Images from "../components/Images";
+
 interface CustomerDetailsProps {
-  id: number;
-  heading: string;
-  description: string;
+  customer: Customer;
 }
 
 const CustomerDetails = ({ customer }: CustomerDetailsProps) => {
-  console.log(customer.heading);
-
   return (
-    <div className="grid place-items-center px-36 pt-12 text-center ">
-      <h1 className="font-normal text-2xl tracking-wide py-2">
-        {customer.heading} details here
+    <div className="grid place-items-center px-36 pt-12 bg-slate-100">
+      <h1 className="font-semibold text-gray-700 text-3xl tracking-wide mb-2">
+        {customer.name}
       </h1>
-      <p className="text-gray-400 py-2 mt-3">{customer.description}</p>
+      <h2 className="text-xl text-gray-600 ">{customer.title}</h2>
+      <p className="mb-4 text-gray-500 text-center">{customer.address}</p>
+      <Images />
     </div>
   );
 };
+
 export default CustomerDetails;
