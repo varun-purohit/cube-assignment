@@ -1,11 +1,18 @@
-// src/AppLayout.tsx
 import CustomerList from "./pages/CustomerList";
 import CustomerDetails from "./pages/CustomerDetails";
 import Header from "./components/Header";
 import { useCustomers } from "./hooks/useCustomerList";
+import { useDispatch } from "react-redux";
+import { setSelectedCustomer } from "./store/customerSlice";
+import { Customer } from "./utils/types";
 
 const AppLayout = () => {
-  const { customers, selectedCustomer, setSelectedCustomer } = useCustomers();
+  const dispatch = useDispatch();
+  const { customers, selectedCustomer } = useCustomers();
+
+  const handleCustomer = (customer: Customer) => {
+    dispatch(setSelectedCustomer(customer));
+  };
 
   return (
     <>
@@ -15,7 +22,7 @@ const AppLayout = () => {
           <CustomerList
             customers={customers}
             selectedCustomer={selectedCustomer}
-            onSelectCustomer={setSelectedCustomer}
+            onSelectCustomer={handleCustomer}
           />
         </div>
         <div className="">

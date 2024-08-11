@@ -1,25 +1,26 @@
-// src/hooks/useCustomers.ts
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { faker } from "@faker-js/faker";
-import { Customer } from "../utils/types";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { setCustomers } from "../store/customerSlice";
 
 export const useCustomers = () => {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null
+  const dispatch = useDispatch();
+  const customers = useSelector((state: RootState) => state.customer.customers);
+  const selectedCustomer = useSelector(
+    (state: RootState) => state.customer.selectedCustomer
   );
 
   useEffect(() => {
     const generatedCustomers = Array.from({ length: 1000 }, (_, index) => ({
-      id: index + 1,
+      id: JSON.stringify(index + 1),
       name: faker.person.fullName(),
       title: faker.person.jobTitle(),
       address: faker.location.streetAddress(true),
     }));
 
-    setCustomers(generatedCustomers);
-    setSelectedCustomer(generatedCustomers[0]);
-  }, []);
+    dispatch(setCustomers(generatedCustomers));
+  }, [dispatch]);
 
-  return { customers, selectedCustomer, setSelectedCustomer };
+  return { customers, selectedCustomer };
 };

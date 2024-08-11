@@ -22,8 +22,8 @@ const Images = ({ id }: ImagesProp) => {
           ) : (
             <img
               src={photo}
-              alt={`Photo ${index + 1}`}
-              className="w-full h-full object-cover rounded"
+              alt="photo"
+              className="w-full h-full object-cover rounded-lg shadow-lg"
             />
           )}
         </div>
