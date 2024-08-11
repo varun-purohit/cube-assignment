@@ -1,44 +1,30 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { usePhotos } from "../hooks/usePhotos";
+import Skelton from "./Skleton";
 
-const Images = () => {
-  const [photos, setPhotos] = useState<string[]>([]);
-  const key = "xFC0fF-uxK5OQhWG4S-hMmnqxh81zE7ypP3kglWqNEQ";
+interface ImagesProp {
+  id: string;
+}
+const Images = ({ id }: ImagesProp) => {
+  const { photos, loading, error } = usePhotos(id);
 
-  const fetchPhotos = async () => {
-    try {
-      const response = await axios.get(
-        `https://api.unsplash.com/photos/random?count=9&client_id=${key}`
-      );
-      console.log(response.data);
-
-      setPhotos(response.data.map((photo: any) => photo.urls.small));
-    } catch (error) {
-      console.error("Error fetching photos:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPhotos();
-    // const interval = setTimeout(fetchPhotos, 1000);
-    // const interval = setInterval(fetchPhotos, 10000);
-    // return () => clearInterval(interval);
-  }, []);
+  if (loading) return <Skelton />;
+  if (error)
+    return <div className="grid place-items-center h-full">{error}</div>;
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4 transition-all duration-300">
       {photos.map((photo, index) => (
         <div key={index} className="aspect-square bg-slate-100 ">
-          {photo ? (
+          {loading ? (
+            <div>
+              <Skelton />
+            </div>
+          ) : (
             <img
               src={photo}
               alt={`Photo ${index + 1}`}
               className="w-full h-full object-cover rounded"
             />
-          ) : (
-            <div key={index} className="grid place-items-center h-full">
-              Loading...
-            </div>
           )}
         </div>
       ))}

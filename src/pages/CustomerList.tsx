@@ -14,6 +14,7 @@ const CustomerList = ({
 }: CustomerListProps) => {
   const [visibleCustomers, setVisibleCustomers] = useState(20);
   const listRef = useRef<HTMLUListElement | null>(null);
+  //   console.log("length", customers.length);
 
   const loadMoreCustomers = () => {
     if (visibleCustomers < customers.length) {
@@ -43,13 +44,17 @@ const CustomerList = ({
 
   return (
     <ul ref={listRef} className="h-full overflow-y-auto">
-      {customers.map((customer) => (
+      {customers.slice(0, visibleCustomers).map((customer) => (
         <li
           key={customer.id}
-          className={`border border-gray-200 p-6 cursor-pointer ${
-            selectedCustomer?.id === customer.id ? "bg-gray-200" : "bg-white"
+          className={`border border-gray-200 p-6 cursor-pointer border-r-2  ${
+            selectedCustomer?.id === customer.id
+              ? "bg-gray-200 border-r-gray-800"
+              : "bg-white"
           }`}
-          onClick={() => onSelectCustomer(customer)}
+          onClick={() => {
+            onSelectCustomer(customer);
+          }}
         >
           <h1 className="capitalize text-gray-700 font-semibold text-xl tracking-wide">
             {customer.name}
